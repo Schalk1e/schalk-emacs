@@ -6,7 +6,11 @@
 ;; emacs-init.org.
 
 ;;; Code:
+;; Need this for my very broken WSL installation.
+;; (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+;;                         ("melpa" . "http://melpa.org/packages/")))
 
+;;; Commence
 (defvar my-init-file (expand-file-name "emacs-init.el" user-emacs-directory)
   "All configurations stored in this file.")
 
@@ -39,23 +43,23 @@
  '(safe-local-variable-values
    '((org-confirm-babel-evaluate)
      (lsp-pylsp-plugins-flake8-enabled)
-     (test-case-name . vumi.dispatchers.tests.test_load_balancer)
-     (test-case-name . vumi.dispatchers.tests.test_base)
-     (test-case-name . vumi.dispatchers.tests.test_endpoint_dispatchers)
+     (test-case-name . vumi\.dispatchers\.tests\.test_load_balancer)
+     (test-case-name . vumi\.dispatchers\.tests\.test_base)
+     (test-case-name . vumi\.dispatchers\.tests\.test_endpoint_dispatchers)
      (encoding . utf-8)
-     (test-case-name . vxsandbox.tests.test_sandbox_rlimiter)
-     (test-case-name . vumi.application.tests.test_test_helpers)
-     (test-case-name . vxsandbox.tests.test_worker)
-     (test-case-name . vumi.tests.test_service)
-     (test-case-name . vumi.application.tests.test_base)
-     (test-case-name . vumi.tests.test_config)
-     (test-case-name . vumi.tests.test_worker)
-     (test-case-name . vxsandbox.resources.tests.test_config)
-     (test-case-name . vxsandbox.resources.tests.test_kv)
-     (test-case-name . vxsandbox.resources.tests.test_logging)
-     (test-case-name . vxsandbox.resources.tests.test_outbound)
-     (test-case-name . vxsandbox.resources.tests.test_utils)
-     (test-case-name . vxsandbox.tests.test_protocol)
+     (test-case-name . vxsandbox\.tests\.test_sandbox_rlimiter)
+     (test-case-name . vumi\.application\.tests\.test_test_helpers)
+     (test-case-name . vxsandbox\.tests\.test_worker)
+     (test-case-name . vumi\.tests\.test_service)
+     (test-case-name . vumi\.application\.tests\.test_base)
+     (test-case-name . vumi\.tests\.test_config)
+     (test-case-name . vumi\.tests\.test_worker)
+     (test-case-name . vxsandbox\.resources\.tests\.test_config)
+     (test-case-name . vxsandbox\.resources\.tests\.test_kv)
+     (test-case-name . vxsandbox\.resources\.tests\.test_logging)
+     (test-case-name . vxsandbox\.resources\.tests\.test_outbound)
+     (test-case-name . vxsandbox\.resources\.tests\.test_utils)
+     (test-case-name . vxsandbox\.tests\.test_protocol)
      (eval setq lsp-rust-rustflags
            (concat "-L dependency=" my-project-path "target/sysroot/lib/rustlib/x86_64-blog_os/lib"))
      (lsp-rust-rustflags . "-L dependency=target/sysroot/lib/rustlib/x86_64-blog_os/lib")
@@ -80,7 +84,7 @@
                   (stringp d)
                   d
                 (car d)))))
-     (lsp-rust-target . x86_64-blog_os.json)
+     (lsp-rust-target . x86_64-blog_os\.json)
      (eval add-to-list 'lsp-file-watch-ignored '"[/\\\\]target-cov$")
      (eval setq flycheck-c/c++-gcc-executable "/usr/local/bin/arm-none-eabi-gcc")
      (flycheck-disabled-checkers quote
@@ -113,7 +117,7 @@
      (eval setq flycheck-gcc-include-path
            (list
             (expand-file-name "~/code/tomu-quickstart/libopencm3/include/")))
-     (test-case-name . twisted.test.test_paths)))
+     (test-case-name . twisted\.test\.test_paths)))
  '(warning-suppress-types '((package reinitialization))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
