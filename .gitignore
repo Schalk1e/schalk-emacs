@@ -1,0 +1,14 @@
+/third-party
+/auto-save-list
+/elpa
+/SessionDesktop.el
+/abbrev_defs
+/ac-comphist.dat
+/var
+/games
+/ensime
+/ido.last
+/semanticdb
+*~
+.DS_Store
+/.lsp-session*

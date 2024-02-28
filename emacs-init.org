@@ -1,0 +1,513 @@
+* Prelude: An org-mode emacs config
+
+This file gets turned into an emacs config using ~org-babel-load-file~
+through a process called "tangling", which basically just extracts and
+concatenates all the =emacs-lisp= code blocks.
+
+** Using this file
+
+This file makes some assumptions about how it's invoked, mostly so that we can
+use a precompiled version. (See the [[Automatically tangling and compiling]]
+section for details.)
+
+None of the code in this section is included in the generated config -- your
+should put it in your =.emacs.d/init.el=.
+
+We need these variable definitions for the autocompiling stuff.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (defvar my-init-file (expand-file-name "emacs-init.el" user-emacs-directory)
+    "All configurations stored in this file.")
+
+  (defvar my-org-file (expand-file-name "emacs-init.org" user-emacs-directory)
+    "All configurations tangled from this file.")
+
+  (defvar my-elisp-dir (expand-file-name "elisp/" user-emacs-directory)
+    "Random elisp that isn't in ELPA or wherever.")
+#+END_SRC
+
+Now load the generated config if it exists, load and tangle this file.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (if (file-exists-p my-init-file)
+      (load-file my-init-file)
+    (progn
+      (org-babel-load-file my-org-file)))
+#+END_SRC
+
+If you don't want the auto-tangling and precompilation, you can just load this
+file every time. It will probably be a lot slower.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (org-babel-load-file my-org-file)
+#+END_SRC
+
+** Editing this file
+
+Please learn the basics of editing and navigating =org-mode= files. You'll be
+much happier once you do.
+
+You probably don't need to learn all the intricacies of code blocks, but these
+two things make working with them much easier:
+  - Hit C-c ' in a code block to edit it in a separate buffer with the
+    appropriate major mode and such.
+  - Type "<s" followed by <TAB> to get a new code block. You'll need to add the
+    language and variables yourself.
+
+See existing sections and code blocks for more details.
+
+* Meta-config
+
+This is a bunch of setup global stuff that always needs to happen.
+
+** Package management
+
+Add melpa and melpa-stable so we can have more nice packages.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+#+END_SRC
+
+** Set up =use-package=
+
+All the package configuration uses =use-package= to keep things fast and
+sensible.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (eval-when-compile
+    (require 'use-package))
+  ;; (setq use-package-verbose t)
+#+END_SRC
+
+** Automatically tangling and compiling
+
+We don't want to have to load and tangle and evaluate everything on
+every startup, so we use a compiled version of the tangled output. We
+also don't want to have to manually tangle and compile every time we
+change something, so we use the =async= package to do that for us
+whenever we save this org-mode file.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package async
+    :ensure t
+    :config
+    (defun my/init-hook ()
+      "If the current buffer is 'emacs-init.org' the code-blocks are tangled."
+      (when (equal (buffer-file-name) my-org-file)
+        (async-start
+         `(lambda ()
+            (require 'org)
+            (org-babel-tangle-file ,my-org-file))
+         (lambda (result)
+           (message "Tangled file compiled.")))))
+    (add-hook 'after-save-hook 'my/init-hook))
+#+END_SRC
+
+** Extra places to find things
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (add-to-list 'load-path my-elisp-dir)
+#+END_SRC
+
+* Global configs
+
+** Unicode things
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (prefer-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+#+END_SRC
+
+** =ido-mode=
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package ido
+    :config
+    (ido-mode t)
+    (setq ido-everywhere t
+          ;; If the file at point exists, use that
+          ido-use-filename-at-point nil
+          ;; Or if it is an URL...
+          ido-use-url-at-point nil
+          ;; Even if TAB completes uniquely,
+          ;; still wait for RET
+          ido-confirm-unique-completion t
+          ;; If the input does not exist,
+          ;; don't look in unexpected places.
+          ;; I probably want a new file.
+          ido-auto-merge-work-directories-length -1))
+#+END_SRC
+
+** Better buffer naming
+
+I prefer prefix uniquification with =ido-mode= to navigate.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package uniquify
+    ;; :ensure t
+    :config
+    (setq uniquify-buffer-name-style 'post-forward
+          uniquify-separator ":"))
+#+END_SRC
+
+** Syntax and highlighting
+
+Including ~tabs~ in ~whitespace-style~ is important for Python code.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; Syntax highlighting on.
+  (global-font-lock-mode 1)
+  (defconst font-lock-maximum-decoration t)
+
+  ;; Show various whitespace.
+  (setq whitespace-style '(face empty tabs lines-tail trailing))
+  (global-whitespace-mode t)
+  (setq-default show-trailing-whitespace t)
+
+  ;; Enable highlighting when marking a region
+  (setq-default transient-mark-mode t)
+#+END_SRC
+
+** Tabs and fill
+
+Never indent with tabs. Default to four-space tabs. Keep lines under 80 columns.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
+
+  (setq-default fill-column 79)
+#+END_SRC
+
+** Environmental differences
+
+Different emacsen, different systems, and terminal vs console all need their
+own config variations.
+
+*** Mac
+
+We want sensible home/end keybindings, login shells, and some functions to
+interact with the system clipboard.
+
+The =pbstuff= module is provided separately.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (when (eq system-type 'darwin)
+    ;; Fix some keybindings
+    (global-set-key [home] 'move-beginning-of-line)
+    (global-set-key  [end] 'move-end-of-line)
+    ;; Avoid dired/ls errors
+    (setq dired-use-ls-dired nil)
+    ;; Invoke login shells so that .profile or .bash_profile is read
+    (setq shell-command-switch "-lc")
+    ;; Load some pbcopy/pbpaste functions
+    (require 'pbstuff))
+#+END_SRC
+
+*** Terminal
+
+No menus in the terminal, please.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (unless (display-graphic-p)
+    (menu-bar-mode -1))
+#+END_SRC
+
+*** Aquamacs vs not-Aquamacs
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (when (boundp 'aquamacs-version)
+    ;; Make this more Emacsy.
+    (one-buffer-one-frame-mode -1)
+    (tabbar-mode -1)
+
+    ;; Make some keybindings saner.
+    (define-key osx-key-mode-map `[(,osxkeys-command-key w)] nil)
+    (define-key osx-key-mode-map [home] 'move-beginning-of-line)
+    (define-key osx-key-mode-map  [end] 'move-end-of-line)
+    (define-key osx-key-mode-map [A-home] 'beginning-of-buffer)
+    (define-key osx-key-mode-map  [A-end] 'end-of-buffer)
+    (define-key osx-key-mode-map [C-left] 'backward-word)
+    (define-key osx-key-mode-map [C-right] 'forward-word)
+
+    ;; Get rid of the stupid "Mac" modifiers.
+    (setq ns-use-mac-modifier-symbols nil)
+
+    ;; Improve zooming.
+    (require 'zoom-replacement)
+    (define-key osx-key-mode-map `[(,osxkeys-command-key =)] 'zoom-interactive)
+    (define-key osx-key-mode-map `[(,osxkeys-command-key +)] 'zoom-interactive)
+    (define-key osx-key-mode-map `[(,osxkeys-command-key -)] 'zoom-interactive-out))
+
+  (unless (boundp 'aquamacs-version)
+    (when (display-graphic-p)
+      ;; Nicer font.
+      (set-face-attribute
+       'default nil
+       :family "Inconsolata" :height 140 :weight 'normal)))
+#+END_SRC
+
+** Miscellaneous bits
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; Autorevert to make VCS nicer
+  (global-auto-revert-mode 1)
+
+  ;; One space between sentences, please.
+  (setq sentence-end-double-space nil)
+
+  ;; Undo some cruft that may have been done.
+  (cua-mode 0)
+  (if window-system (tool-bar-mode 0))
+  (setq inhibit-startup-screen t)
+
+  ;; Better behaviour when started with multiple files.
+  (setq inhibit-startup-buffer-menu t)
+  (setq split-width-threshold 150)
+
+  ;; Current point in mode bar.
+  (line-number-mode t)
+  (column-number-mode t)
+
+  ;; Turn off backups (that's what VCS is for) and move auto-save out the way.
+  (setq auto-save-default nil)
+  (setq make-backup-files nil)
+#+END_SRC
+
+* Languages and other things
+
+** gist
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq-default gist-view-gist t)
+#+END_SRC
+
+** Org
+
+Not much here. I only started using =org-mode= for this, so it'll probably grow
+over time.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package org
+    :config
+    (setq org-src-fontify-natively t))
+#+END_SRC
+
+** Clojure
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package clojure-mode
+    :ensure t
+    :init
+    (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+    :config
+    (use-package flycheck-clj-kondo
+      :ensure t))
+
+  (use-package cider
+    :ensure t
+    :defer t)
+#+END_SRC
+
+** CSV
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package csv-mode
+    :ensure t)
+#+END_SRC
+
+** Docker
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package dockerfile-mode
+    :ensure t
+    :mode "\\.docker$")
+#+END_SRC
+
+** Emacs-reveal
+
+Presentation stuff. See https://gitlab.com/oer/emacs-reveal-howto for details.
+
+Turns out this has an annoyingly long setup step that runs every startup, so
+disable for now.
+
+# #+BEGIN_SRC emacs-lisp :tangle yes
+#   (use-package emacs-reveal
+#     :load-path "third-party/emacs-reveal")
+# #+END_SRC
+
+** Go
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package go-mode
+    :ensure t
+    :hook ((go-mode . lsp)
+           ;; Drop tabs from visible whitespace list
+           (go-mode . (lambda ()
+                        (setq-local whitespace-style
+                                    '(face empty lines-tail trailing))))
+           ;; Let LSP rewrite my file, because Go is too annoying otherwise
+           (before-save . lsp-format-buffer)
+           (before-save . lsp-organize-imports))
+    :config
+    (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin")))
+
+  ;; (use-package flycheck-gometalinter
+  ;;   :ensure t
+  ;;   :config
+  ;;   (progn
+  ;;     (setq flycheck-gometalinter-fast t)
+  ;;     (setq flycheck-gometalinter-tests t)
+  ;;     (setq flycheck-gometalinter-deadline "10s")
+  ;;     (flycheck-gometalinter-setup)))
+
+  ;; (use-package flycheck-golangci-lint
+  ;;   :ensure t
+  ;;   :hook (go-mode . flycheck-golangci-lint-setup)
+  ;;   :config
+  ;;   (setq flycheck-golangci-lint-tests t)
+  ;;   (setq flycheck-golangci-lint-deadline "5s")
+  ;;   ;; There's a bug that requires us to stick = on the front.
+  ;;   (setq flycheck-golangci-lint-config
+  ;;         (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+#+END_SRC
+
+** HTML
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+    ;; web-mode, please.
+    (use-package web-mode
+      :ensure t
+      :mode (("\\.html?$" . web-mode)
+             ("\\.tsx$" . web-mode))
+      :config
+      (setq web-mode-markup-indent-offset 2)
+      (setq web-mode-code-indent-offset 2)
+      (setq web-mode-script-padding 2)
+      ;; Use tidy5 instead of tidy, because we like HTML5.
+      (setq flycheck-html-tidy-executable "tidy5")
+      (add-hook 'web-mode-hook
+            (lambda ()
+              (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                (setup-tide-mode)))))
+
+    ;; This is like HTML, right?
+    (use-package sass-mode
+      :ensure t
+      :mode "\\.scss\\'")
+#+END_SRC
+
+** jq
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package jq-mode
+    :ensure t
+    :mode (("\\.jq$" . jq-mode)))
+#+END_SRC
+
+** Markdown
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package markdown-mode
+    :ensure t)
+#+END_SRC
+
+** PowerShell
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package powershell
+    :ensure t)
+#+END_SRC
+
+** Python
+
+Tabs are highlighted in the general whitespace configuration.
+
+We need to set ~py-underscore-word-syntax-p~ in ~:init~ because it's used when
+the syntax table's being built and that apparently happens before ~:config~.
+
+In addition, we configure =lsp-mode= to start with =python-mode=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package python-mode
+    :ensure t
+    :init
+    (setq py-underscore-word-syntax-p nil)
+    :custom
+    ;; This breaks indenting various things.
+    ;; (py-closing-list-dedents-bos t)
+    (py-docstring-syle 'django)
+    (py-docstring-fill-column 79)
+    (py-mark-decorators t)
+    (py-indent-list-style 'one-level-to-beginning-of-statement))
+
+#+END_SRC
+
+** Rust
+
+I use [[LSP]] for Rust. Make sure `rls` is installed.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; (add-hook 'rust-mode-hook #'flycheck-rust-setup)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package cargo
+    :ensure t
+    )
+
+  (use-package rust-mode
+    :ensure t
+    )
+#+END_SRC
+
+** Shell
+
+OSX has a kernel bug that can be triggered by killing a running shell when
+exiting. To avoid this, we lock shell buffers and require the subprocess to be
+manually terminated.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (add-hook 'shell-mode-hook 'emacs-lock-mode)
+#+END_SRC
+
+** Terraform
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package terraform-mode
+    :ensure t)
+#+END_SRC
+
+** Text
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (add-hook 'text-mode-hook
+            (lambda ()
+              (setq-local whitespace-style '(face empty tabs trailing))
+              (turn-on-visual-line-mode)))
+#+END_SRC
+
+** TypeScript
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package typescript-mode
+    :ensure t)
+
+  (setq-default typescript-indent-level 2)
+
+  (use-package tide
+    :ensure t
+    :after (typescript-mode flycheck)
+    :hook ((typescript-mode . tide-setup)
+           (typescript-mode . tide-hl-identifier-mode)))
+#+END_SRC
+
+** YAML
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package yaml-mode
+    :ensure t)
+#+END_SRC
+
