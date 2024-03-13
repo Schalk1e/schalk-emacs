@@ -131,53 +131,17 @@
 (setq auto-save-default nil)
 (setq make-backup-files nil)
 
-(use-package flycheck
-  :ensure t
-  :init
-  (global-flycheck-mode)
-  (setq flycheck-check-syntax-automatically '(mode-enabled save)))
-
-(use-package flyspell
-  :hook
-  ((org-mode markdown-mode) . flyspell-mode)
-  ;; (prog-mode . flyspell-prog-mode)
-  (before-save-hook . flyspell-buffer)
-  :custom
-  (ispell-program-name "aspell")
-  (ispell-extra-args '("--sug-mode=normal" "--master=en_GB-ize-w_accents")))
+;; Can I have muliple cursors??
+(use-package multiple-cursors
+  :ensure t)
+;; Setting keybind for mc here for now. Do this better.
+(global-set-key (kbd "M-m") 'mc/edit-lines)
 
 (setq-default gist-view-gist t)
 
 (use-package org
   :config
   (setq org-src-fontify-natively t))
-
-(use-package rainbow-delimiters
-  :ensure t
-  :defer t
-  :init
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-  ;; Apparently this is special?
-  (add-hook 'python-mode-hook 'rainbow-delimiters-mode)
-  :config
-  ;; Set some custom colours based loosely on the zenburn theme.
-  (set-face-attribute 'rainbow-delimiters-depth-1-face nil :foreground "grey55")
-  (set-face-attribute 'rainbow-delimiters-depth-2-face nil :foreground "#f0dfaf")
-  (set-face-attribute 'rainbow-delimiters-depth-3-face nil :foreground "#94bff3")
-  (set-face-attribute 'rainbow-delimiters-depth-4-face nil :foreground "#dca3a3")
-  (set-face-attribute 'rainbow-delimiters-depth-5-face nil :foreground "#8fb28f")
-  (set-face-attribute 'rainbow-delimiters-depth-6-face nil :foreground "#93e0e3")
-  (set-face-attribute 'rainbow-delimiters-depth-7-face nil :foreground "#dfaf8f")
-  (set-face-attribute 'rainbow-delimiters-depth-8-face nil :foreground "#dc8cc3"))
-
-(setq-default c-basic-offset 4)
-(add-hook 'c-mode-common-hook
-          (lambda () (local-set-key "\C-m" 'newline-and-indent)))
-
-(use-package omnisharp-mode
-  :hook csharp-mode
-  :init
-  (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
 
 (use-package clojure-mode
   :ensure t
@@ -194,28 +158,9 @@
 (use-package csv-mode
   :ensure t)
 
-(use-package dhall-mode
-  :ensure t
-  :config
-  (setq
-   dhall-format-at-save nil))
-
 (use-package dockerfile-mode
   :ensure t
   :mode "\\.docker$")
-
-(use-package elixir-mode
-  :mode (("\\.exs?$" . elixir-mode))
-  :config
-  (require 'alchemist)
-  (add-hook 'elixir-mode-hook 'alchemist-mode)
-  (setq alchemist-hooks-compile-on-save t))
-
-(use-package erlang
-  :ensure t)
-
-(use-package fountain-mode
-  :ensure t)
 
 (use-package go-mode
   :ensure t
@@ -249,14 +194,6 @@
 ;;   (setq flycheck-golangci-lint-config
 ;;         (expand-file-name "~/.gostuff/golangci-emacs.yml")))
 
-(use-package graphql-mode
-  :ensure t)
-
-(use-package groovy-mode
-  :mode (("^Jenkinsfile$" . groovy-mode)
-         ("\\.jenkins$" . groovy-mode)
-         ("\\.groovy$" . groovy-mode)))
-
 ;; web-mode, please.
 (use-package web-mode
   :ensure t
@@ -278,98 +215,14 @@
   :ensure t
   :mode "\\.scss\\'")
 
-(setq-default js-indent-level 2)
-
 (use-package jq-mode
   :ensure t
   :mode (("\\.jq$" . jq-mode)))
 
-(use-package jsonnet-mode
-  :ensure t)
-
-(use-package lsp-mode
-  :ensure t
-  :hook ((python-mode . lsp-deferred)
-         ((rust-mode dhall-mode) . lsp))
-  :config
-  (setq lsp-prefer-flymake nil
-        lsp-enable-snippet nil
-        lsp-headerline-breadcrumb-enable nil)
-  (lsp-register-custom-settings '(("pylsp.plugins.pylsp_mypy.dmypy" nil t)
-                                  ("pylsp.plugins.pylsp_mypy.live_mode" nil t)
-                                  ("pylsp.plugins.pylsp_mypy.report_progress" t t)))
-  :commands (lsp lsp-deferred))
-
-(use-package lsp-ui
-  :ensure t
-  :config
-  (setq lsp-ui-doc-enable nil
-        lsp-ui-flycheck-enable t
-        lsp-ui-flycheck-live-reporting t
-        lsp-ui-sideline-show-hover nil)
-  :commands lsp-ui-mode)
-
-;; (use-package lua-mode
-;;   :ensure t)
-
 (use-package markdown-mode
   :ensure t)
 
-(use-package tuareg
-  :mode (("\\.ml[ily]?$" . tuareg-mode)
-         ("\\.topml$" . tuareg-mode)
-         ("\\.atd$" . tuareg-mode))
-  :config
-  ;; Undefine this function to stop `<<' triggering camlp4 syntax stuff.
-  (defun tuareg-syntax-propertize (start end))
-
-  (setq opam-share (substring (shell-command-to-string
-                               "opam config var share") 0 -1))
-  (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
-  (load-file (concat opam-share "/emacs/site-lisp/ocp-indent.el"))
-  (require 'ocp-indent)
-  (require 'merlin)
-
-  (define-key merlin-mode-map
-    (kbd "C-c <up>") 'merlin-type-enclosing-go-up)
-  (define-key merlin-mode-map
-    (kbd "C-c <down>") 'merlin-type-enclosing-go-down)
-
-  (add-hook 'tuareg-mode-hook 'merlin-mode)
-  (add-hook 'tuareg-mode-hook 'ocp-setup-indent)
-  (setq merlin-use-auto-complete-mode 'easy)
-  ;; Use opam switch to lookup ocamlmerlin binary
-  (setq merlin-command 'opam)
-  ;; (setq merlin-error-after-save nil)
-
-  (require 'auto-complete)
-  (setq ac-auto-start nil)
-  (setq ac-candidate-menu-min 0)
-  (setq ac-disable-inline t)
-  ;; (setq ac-auto-show-menu 0.8)
-  ;; (define-key ac-completing-map "\r" nil)
-  (add-hook 'tuareg-mode-hook 'auto-complete-mode))
-
-(use-package octave-mode
-  :mode "\\.m$")
-
-(use-package ox-reveal
-  :ensure t
-  :config
-  (setq org-export-allow-bind-keywords t))
-
-(use-package php-mode
-  :ensure t
-  :custom
-  (php-mode-coding-style 'symfony2))
-
 (use-package powershell
-  :ensure t)
-
-(use-package powershell
-  :ensure t)
-
-(use-package puppet-mode
   :ensure t)
 
 (use-package python-mode
@@ -383,30 +236,6 @@
   (py-docstring-fill-column 79)
   (py-mark-decorators t)
   (py-indent-list-style 'one-level-to-beginning-of-statement))
-
-(use-package ruby-mode
-  :mode "\\.rb\\'"
-  :init
-  (setq ruby-use-smie nil)
-  :config
-  (defadvice ruby-indent-line (after unindent-closing-paren activate)
-    (let ((column (current-column))
-          indent offset)
-      (save-excursion
-        (back-to-indentation)
-        (let ((state (syntax-ppss)))
-          (setq offset (- column (current-column)))
-          (when (and (eq (char-after) ?\))
-                     (not (zerop (car state))))
-            (goto-char (cadr state))
-            (setq indent (current-indentation)))))
-      (when indent
-        (indent-line-to indent)
-        (when (> offset 0) (forward-char offset)))))
-  (setq ruby-deep-indent-paren-style nil)
-  (use-package ruby-electric
-    :ensure t)
-  (add-hook 'ruby-mode-hook 'ruby-electric-mode))
 
 ;; (add-hook 'rust-mode-hook #'flycheck-rust-setup)
 

@@ -27,6 +27,7 @@ We need these variable definitions for the autocompiling stuff.
 #+END_SRC
 
 Now load the generated config if it exists, load and tangle this file.
+To manually tangle this file do `M-x org-mode` and `C-c C-v t`.
 
 #+BEGIN_SRC emacs-lisp :tangle no
   (if (file-exists-p my-init-file)
@@ -274,6 +275,12 @@ No menus in the terminal, please.
   ;; Turn off backups (that's what VCS is for) and move auto-save out the way.
   (setq auto-save-default nil)
   (setq make-backup-files nil)
+
+  ;; Can I have muliple cursors??
+  (use-package multiple-cursors
+    :ensure t)
+  ;; Setting keybind for mc here for now. Do this better.
+  (global-set-key (kbd "M-m") 'mc/edit-lines)
 #+END_SRC
 
 * Languages and other things
