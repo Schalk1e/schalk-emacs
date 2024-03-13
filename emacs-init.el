@@ -64,17 +64,6 @@
 
 (setq-default fill-column 79)
 
-(when (eq system-type 'darwin)
-  ;; Fix some keybindings
-  (global-set-key [home] 'move-beginning-of-line)
-  (global-set-key  [end] 'move-end-of-line)
-  ;; Avoid dired/ls errors
-  (setq dired-use-ls-dired nil)
-  ;; Invoke login shells so that .profile or .bash_profile is read
-  (setq shell-command-switch "-lc")
-  ;; Load some pbcopy/pbpaste functions
-  (require 'pbstuff))
-
 (unless (display-graphic-p)
   (menu-bar-mode -1))
 

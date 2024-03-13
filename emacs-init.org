@@ -194,7 +194,7 @@ interact with the system clipboard.
 
 The =pbstuff= module is provided separately.
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
   (when (eq system-type 'darwin)
     ;; Fix some keybindings
     (global-set-key [home] 'move-beginning-of-line)
