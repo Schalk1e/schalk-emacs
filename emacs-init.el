@@ -64,6 +64,14 @@
 
 (setq-default fill-column 79)
 
+(when (eq system-type 'gnu/linux)
+  (setq package-check-signature nil)
+  ;; use xclip
+  (use-package xclip
+    :ensure t)
+  (xclip-mode 1)
+)
+
 (unless (display-graphic-p)
   (menu-bar-mode -1))
 

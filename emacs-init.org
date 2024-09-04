@@ -113,6 +113,7 @@ whenever we save this org-mode file.
 
 * Global configs
 
+
 ** Unicode things
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -205,6 +206,20 @@ The =pbstuff= module is provided separately.
     (setq shell-command-switch "-lc")
     ;; Load some pbcopy/pbpaste functions
     (require 'pbstuff))
+#+END_SRC
+
+*** Linux
+
+Need xclip to link kill-ring to clipboard.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (when (eq system-type 'gnu/linux)
+    (setq package-check-signature nil)
+    ;; use xclip
+    (use-package xclip
+      :ensure t)
+    (xclip-mode 1)
+  )
 #+END_SRC
 
 *** Terminal
