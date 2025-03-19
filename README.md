@@ -1,6 +1,4 @@
-# An Emacs Config Shamelessly Stolen from https://github.com/jerith/jerith-emacs
-
-## How to use this condensed version
+## Use
 
 Emacs looks for ~/.emacs.d/init.el for any custom configuration the user
 requires.This repository uses an org file (`emacs-init.org`) that is 'compiled
