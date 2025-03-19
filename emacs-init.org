@@ -362,6 +362,8 @@ disable for now.
 
 ** Go
 
+This uses eglot for annotations and hints. It's more lightweight than the full scale Golang LSP. Important to not that this requires `gopls` to be installed.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package go-mode
   :ensure t
