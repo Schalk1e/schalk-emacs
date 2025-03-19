@@ -171,25 +171,12 @@
          (before-save . lsp-organize-imports))
   :config
   (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin")))
+(use-package eglot
+  :ensure t
+  :hook (go-mode . eglot-ensure))
 
-;; (use-package flycheck-gometalinter
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (setq flycheck-gometalinter-fast t)
-;;     (setq flycheck-gometalinter-tests t)
-;;     (setq flycheck-gometalinter-deadline "10s")
-;;     (flycheck-gometalinter-setup)))
-
-;; (use-package flycheck-golangci-lint
-;;   :ensure t
-;;   :hook (go-mode . flycheck-golangci-lint-setup)
-;;   :config
-;;   (setq flycheck-golangci-lint-tests t)
-;;   (setq flycheck-golangci-lint-deadline "5s")
-;;   ;; There's a bug that requires us to stick = on the front.
-;;   (setq flycheck-golangci-lint-config
-;;         (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+(setq eldoc-echo-area-use-multiline-p t) ;; Show multiline hints
+(setq eglot-stay-out-of '(flymake)) ;; Avoid conflicts
 
 ;; web-mode, please.
 (use-package web-mode
