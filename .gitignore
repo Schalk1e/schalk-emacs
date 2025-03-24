@@ -1,14 +1,35 @@
-/third-party
-/auto-save-list
-/elpa
-/SessionDesktop.el
-/abbrev_defs
-/ac-comphist.dat
-/var
-/games
-/ensime
-/ido.last
-/semanticdb
+# Byte-compiled Emacs files
+*.elc
+*.eln
+*.el~
+
+# Auto-save and backup files
 *~
-.DS_Store
-/.lsp-session*
+\#*\#
+/auto-save-list/
+
+# Package-specific files
+straight/
+elpa/
+var/
+eshell/history
+eshell/lastdir
+
+# Lock and temp files
+.tramp
+.emacs.desktop
+.emacs.desktop.lock
+projectile.cache
+
+# Org-mode temporary files
+*.org~
+*.org#
+*.org_archive
+
+# Logs and miscellaneous
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.DS_Store
