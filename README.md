@@ -1,6 +1,6 @@
 ## Use
 
-Credit for writing this nifty emacs config that I've adapted for my purposes:  https://github.com/jerith/jerith-emacs.
+Credit for writing this nifty emacs config that I've adapted for my purposes:  https://github.com/jerith/jerith-emacs. (Kindly reference this repository for licensing details.)
 
 Emacs looks at ~/.emacs.d/init.el for any custom configuration the user
 requires.This repository uses an org file (`emacs-init.org`) that is 'compiled
