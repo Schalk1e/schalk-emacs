@@ -136,6 +136,15 @@
 
 (setq-default gist-view-gist t)
 
+(use-package eglot
+  :custom
+  ;; (eglot-send-changes-idle-time 60 "I'd rather not do this at all, but it's better than nothing.")
+  (eglot-connect-timeout 60 "elixir-ls takes a while to start, sometimes.")
+  :config
+  (add-to-list 'eglot-server-programs '(elixir-ts-mode "elixir-ls"))
+  (add-to-list 'eglot-stay-out-of 'eldoc)
+  :hook ((python-ts-mode elixir-ts-mode kotlin-ts-mode) . eglot-ensure))
+
 (use-package org
   :config
   (setq org-src-fontify-natively t))
@@ -159,24 +168,24 @@
   :ensure t
   :mode "\\.docker$")
 
+(use-package lsp-mode
+  :ensure t
+  :commands lsp
+  :config
+  (setq lsp-prefer-flymake nil))  ;; Optional: Use lsp-mode instead of flymake for diagnostics
+
 (use-package go-mode
   :ensure t
   :hook ((go-mode . lsp)
-         ;; Drop tabs from visible whitespace list
-         (go-mode . (lambda ()
-                      (setq-local whitespace-style
-                                  '(face empty lines-tail trailing))))
-         ;; Let LSP rewrite my file, because Go is too annoying otherwise
-         (before-save . lsp-format-buffer)
-         (before-save . lsp-organize-imports))
+         (go-mode
+          . (lambda ()
+              ;; Drop tabs from visible whitespace list
+              (setq-local whitespace-style '(face empty lines-tail trailing))
+              ;; Let LSP rewrite my file, because Go is too annoying otherwise
+              (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)
+              (add-hook 'before-save-hook #'lsp-organize-imports nil 'local))))
   :config
   (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin")))
-(use-package eglot
-  :ensure t
-  :hook (go-mode . eglot-ensure))
-
-(setq eldoc-echo-area-use-multiline-p t) ;; Show multiline hints
-(setq eglot-stay-out-of '(flymake)) ;; Avoid conflicts
 
 ;; web-mode, please.
 (use-package web-mode
