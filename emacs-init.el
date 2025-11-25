@@ -75,6 +75,10 @@
 (unless (display-graphic-p)
   (menu-bar-mode -1))
 
+(use-package  multiple-cursors
+  :ensure t
+  :bind (("M-m" . mc/edit-lines)))
+
 (setq-default gist-view-gist t)
 
 (use-package eglot

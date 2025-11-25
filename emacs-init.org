@@ -249,6 +249,18 @@ Links to these can be seen at the aidermacs Github project [[ https://github.com
           (aidermacs-default-model "gpt-4o"))
 #+END_SRC
 
+** Simple Multi-cursor setup
+
+I like a simple keybind that allows me to have multiple cursors across a selected block.
+
+The base emacs approach is a little involved so I like to use *multiple-cursors* for this.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package  multiple-cursors
+  :ensure t
+  :bind (("M-m" . mc/edit-lines)))
+#+END_SRC
+
 * Languages and other things
 
 ** gist
