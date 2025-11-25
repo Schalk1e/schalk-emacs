@@ -226,6 +226,29 @@ No menus in the terminal, please.
     (menu-bar-mode -1))
 #+END_SRC
 
+** AI Integrations
+
+*** Aidermacs
+
+Setup aidermacs for LLM integrations. This requires a number of other things to be installed:
+
+- Transient
+- Aider
+
+Links to these can be seen at the aidermacs Github project [[ https://github.com/MatthewZMD/aidermacs][here]]. We're not defauting to tangling this because of the pre-setup requirements.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+        (use-package aidermacs
+          :ensure t
+          :bind (("C-c a" . aidermacs-transient-menu))
+          :config
+          ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
+          (setenv "OPENAI_API_KEY" "sk-...")
+          :custom
+          (aidermacs-default-chat-mode 'architect)
+          (aidermacs-default-model "gpt-4o"))
+#+END_SRC
+
 * Languages and other things
 
 ** gist
