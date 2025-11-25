@@ -190,10 +190,7 @@ own config variations.
 
 *** Mac
 
-We want sensible home/end keybindings, login shells, and some functions to
-interact with the system clipboard.
-
-The =pbstuff= module is provided separately.
+We want sensible home/end keybindings and login shells.
 
 #+BEGIN_SRC emacs-lisp :tangle no
   (when (eq system-type 'darwin)
@@ -203,9 +200,7 @@ The =pbstuff= module is provided separately.
     ;; Avoid dired/ls errors
     (setq dired-use-ls-dired nil)
     ;; Invoke login shells so that .profile or .bash_profile is read
-    (setq shell-command-switch "-lc")
-    ;; Load some pbcopy/pbpaste functions
-    (require 'pbstuff))
+    (setq shell-command-switch "-lc"))
 #+END_SRC
 
 *** Linux

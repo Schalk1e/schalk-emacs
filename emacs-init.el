@@ -75,65 +75,6 @@
 (unless (display-graphic-p)
   (menu-bar-mode -1))
 
-(when (boundp 'aquamacs-version)
-  ;; Make this more Emacsy.
-  (one-buffer-one-frame-mode -1)
-  (tabbar-mode -1)
-
-  ;; Make some keybindings saner.
-  (define-key osx-key-mode-map `[(,osxkeys-command-key w)] nil)
-  (define-key osx-key-mode-map [home] 'move-beginning-of-line)
-  (define-key osx-key-mode-map  [end] 'move-end-of-line)
-  (define-key osx-key-mode-map [A-home] 'beginning-of-buffer)
-  (define-key osx-key-mode-map  [A-end] 'end-of-buffer)
-  (define-key osx-key-mode-map [C-left] 'backward-word)
-  (define-key osx-key-mode-map [C-right] 'forward-word)
-
-  ;; Get rid of the stupid "Mac" modifiers.
-  (setq ns-use-mac-modifier-symbols nil)
-
-  ;; Improve zooming.
-  (require 'zoom-replacement)
-  (define-key osx-key-mode-map `[(,osxkeys-command-key =)] 'zoom-interactive)
-  (define-key osx-key-mode-map `[(,osxkeys-command-key +)] 'zoom-interactive)
-  (define-key osx-key-mode-map `[(,osxkeys-command-key -)] 'zoom-interactive-out))
-
-(unless (boundp 'aquamacs-version)
-  (when (display-graphic-p)
-    ;; Nicer font.
-    (set-face-attribute
-     'default nil
-     :family "Inconsolata" :height 140 :weight 'normal)))
-
-;; Autorevert to make VCS nicer
-(global-auto-revert-mode 1)
-
-;; One space between sentences, please.
-(setq sentence-end-double-space nil)
-
-;; Undo some cruft that may have been done.
-(cua-mode 0)
-(if window-system (tool-bar-mode 0))
-(setq inhibit-startup-screen t)
-
-;; Better behaviour when started with multiple files.
-(setq inhibit-startup-buffer-menu t)
-(setq split-width-threshold 150)
-
-;; Current point in mode bar.
-(line-number-mode t)
-(column-number-mode t)
-
-;; Turn off backups (that's what VCS is for) and move auto-save out the way.
-(setq auto-save-default nil)
-(setq make-backup-files nil)
-
-;; Can I have muliple cursors??
-(use-package multiple-cursors
-  :ensure t)
-;; Setting keybind for mc here for now. Do this better.
-(global-set-key (kbd "M-m") 'mc/edit-lines)
-
 (setq-default gist-view-gist t)
 
 (use-package eglot
