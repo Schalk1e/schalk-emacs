@@ -33,3 +33,4 @@ projectile.cache
 *.swp
 *.swo
 *.DS_Store
+.aider*
