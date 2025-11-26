@@ -263,6 +263,20 @@ The base emacs approach is a little involved so I like to use *multiple-cursors*
 
 * Languages and other things
 
+** git
+
+Setup Magit to view diffs in emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+;; Magit setup for Emacs
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch))
+  :config
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+#+END_SRC
+
 ** gist
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -323,18 +337,6 @@ over time.
     :ensure t
     :mode "\\.docker$")
 #+END_SRC
-
-** Emacs-reveal
-
-Presentation stuff. See https://gitlab.com/oer/emacs-reveal-howto for details.
-
-Turns out this has an annoyingly long setup step that runs every startup, so
-disable for now.
-
-# #+BEGIN_SRC emacs-lisp :tangle yes
-#   (use-package emacs-reveal
-#     :load-path "third-party/emacs-reveal")
-# #+END_SRC
 
 ** Go
 

@@ -79,6 +79,14 @@
   :ensure t
   :bind (("M-m" . mc/edit-lines)))
 
+;; Magit setup for Emacs
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch))
+  :config
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+
 (setq-default gist-view-gist t)
 
 (use-package eglot
