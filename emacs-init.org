@@ -277,6 +277,21 @@ Setup Magit to view diffs in emacs.
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 #+END_SRC
 
+Use forge to obtain permalinks etc from local. Temporary addition to experiment with forge to see if it might speed
+up my git workflow a little.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;;  Let's add forge for permalinks etc
+  (use-package forge
+       :ensure t
+       :after magit
+       :config
+       ;; Add your GitLab instance if it's self-hosted
+       (add-to-list 'forge-alist
+                    '("gitlab.com" "https://gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository))
+                    '("github.com" "https://api.github.com" "github.com" forge-github-repository))
+#+END_SRC
+
 ** gist
 
 #+BEGIN_SRC emacs-lisp :tangle yes

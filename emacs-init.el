@@ -87,6 +87,16 @@
   :config
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
+;;  Let's add forge for permalinks etc
+(use-package forge
+     :ensure t
+     :after magit
+     :config
+     ;; Add your GitLab instance if it's self-hosted
+     (add-to-list 'forge-alist
+                  '("gitlab.com" "https://gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository))
+                  '("github.com" "https://api.github.com" "github.com" forge-github-repository))
+
 (setq-default gist-view-gist t)
 
 (use-package eglot
