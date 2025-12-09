@@ -100,13 +100,11 @@
 (setq-default gist-view-gist t)
 
 (use-package eglot
-  :custom
-  ;; (eglot-send-changes-idle-time 60 "I'd rather not do this at all, but it's better than nothing.")
-  (eglot-connect-timeout 60 "elixir-ls takes a while to start, sometimes.")
+  :ensure t
   :config
-  (add-to-list 'eglot-server-programs '(elixir-ts-mode "elixir-ls"))
-  (add-to-list 'eglot-stay-out-of 'eldoc)
-  :hook ((python-ts-mode elixir-ts-mode kotlin-ts-mode) . eglot-ensure))
+  (add-to-list 'eglot-server-programs
+               `(python-mode . ("~/.emacs.d/bin/pylsp")))
+  :hook (python-mode . eglot-ensure))
 
 (use-package org
   :config
