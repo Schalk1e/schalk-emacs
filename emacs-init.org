@@ -246,7 +246,7 @@ Links to these can be seen at the aidermacs Github project [[ https://github.com
           (setenv "OPENAI_API_KEY" "sk-...")
           :custom
           (aidermacs-default-chat-mode 'architect)
-          (aidermacs-default-model "gpt-4o"))
+          (aidermacs-default-model "gpt-5.2"))
 #+END_SRC
 
 ** Simple Multi-cursor setup
