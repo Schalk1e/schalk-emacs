@@ -64,6 +64,15 @@
 
 (setq-default fill-column 79)
 
+(when (eq system-type 'darwin)
+  ;; Fix some keybindings
+  (global-set-key [home] 'move-beginning-of-line)
+  (global-set-key  [end] 'move-end-of-line)
+  ;; Avoid dired/ls errors
+  (setq dired-use-ls-dired nil)
+  ;; Invoke login shells so that .profile or .bash_profile is read
+  (setq shell-command-switch "-lc"))
+
 (when (eq system-type 'gnu/linux)
   (setq package-check-signature nil)
   ;; use xclip
@@ -75,23 +84,46 @@
 (unless (display-graphic-p)
   (menu-bar-mode -1))
 
+(use-package aidermacs
+    :ensure t
+    :bind (("C-c a" . aidermacs-transient-menu))
+    ; :config
+    ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
+    ; (setenv "OPENAI_API_KEY" "sk-...")
+    ; :custom
+    ; (aidermacs-default-chat-mode 'architect)
+    ; (aidermacs-default-model "gpt-5.2")
+)
+
 (use-package  multiple-cursors
   :ensure t
   :bind (("M-m" . mc/edit-lines)))
 
 (defun insert-daily-log-entry ()
-  "Insert a daily log entry template for today."
+  "Insert a daily log entry template for today, or add to existing date entry."
   (interactive)
-  (goto-char (point-min))
-  (re-search-forward "^\\* Log Entries" nil t)
-  (end-of-line)
-  (newline)
-  (insert "** " (format-time-string "%Y-%m-%d %A") "\n")
-  (insert "*** Work Item Name\n")
-  (insert "**** TODO [/]\n")
-  (insert "- [ ]\n")
-  (insert "***** Notes\n")
-  (insert "-"))
+  (let ((today (format-time-string "%Y-%m-%d %A")))
+    (goto-char (point-min))
+    (re-search-forward "^\\* Log Entries" nil t)
+    ;; Check if today's date already exists
+    (if (re-search-forward (concat "^\\*\\* " (regexp-quote today)) nil t)
+        ;; Date exists, go to end of that section
+        (progn
+          (org-end-of-subtree)
+          (newline))
+      ;; Date doesn't exist, create new date entry
+      (progn
+        (goto-char (point-min))
+        (re-search-forward "^\\* Log Entries" nil t)
+        (end-of-line)
+        (newline)
+        (insert "** " today "\n")))
+    ;; Insert work item template (always happens)
+    (insert "*** Work Item Name\n")
+    (insert "**** TODO [/]\n")
+    (insert "- [ ]\n")
+    (insert "***** Notes\n")
+    (insert "-")))
 
 (global-set-key (kbd "C-c l") 'insert-daily-log-entry)
 
