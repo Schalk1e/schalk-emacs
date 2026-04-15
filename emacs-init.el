@@ -79,6 +79,22 @@
   :ensure t
   :bind (("M-m" . mc/edit-lines)))
 
+(defun insert-daily-log-entry ()
+  "Insert a daily log entry template for today."
+  (interactive)
+  (goto-char (point-min))
+  (re-search-forward "^\\* Log Entries" nil t)
+  (end-of-line)
+  (newline)
+  (insert "** " (format-time-string "%Y-%m-%d %A") "\n")
+  (insert "*** Work Item Name\n")
+  (insert "**** TODO [/]\n")
+  (insert "- [ ]\n")
+  (insert "***** Notes\n")
+  (insert "-"))
+
+(global-set-key (kbd "C-c l") 'insert-daily-log-entry)
+
 ;; Magit setup for Emacs
 (use-package magit
   :ensure t
@@ -97,7 +113,7 @@
                   '("gitlab.com" "https://gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository))
                   '("github.com" "https://api.github.com" "github.com" forge-github-repository))
 
-(setq-default gist-view-gist t)
+
 
 (use-package eglot
   :ensure t

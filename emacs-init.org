@@ -261,6 +261,28 @@ The base emacs approach is a little involved so I like to use *multiple-cursors*
   :bind (("M-m" . mc/edit-lines)))
 #+END_SRC
 
+** Keybinds For Daily  Logs
+
+Add a keybind that prepopulates a daily log entry in a log org file. A template for such a log file can be found [[LOG-TEMPLATE.org][here]].
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun insert-daily-log-entry ()
+  "Insert a daily log entry template for today."
+  (interactive)
+  (goto-char (point-min))
+  (re-search-forward "^\\* Log Entries" nil t)
+  (end-of-line)
+  (newline)
+  (insert "** " (format-time-string "%Y-%m-%d %A") "\n")
+  (insert "*** Work Item Name\n")
+  (insert "**** TODO [/]\n")
+  (insert "- [ ]\n")
+  (insert "***** Notes\n")
+  (insert "-"))
+
+(global-set-key (kbd "C-c l") 'insert-daily-log-entry)
+#+END_SRC
+
 * Languages and other things
 
 ** git
@@ -295,7 +317,7 @@ up my git workflow a little.
 ** gist
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (setq-default gist-view-gist t)
+
 #+END_SRC
 
 ** eglot

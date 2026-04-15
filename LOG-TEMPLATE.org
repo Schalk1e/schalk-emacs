@@ -1,0 +1,47 @@
+#+TITLE: Daily Work Log
+#+STARTUP: overview
+
+* Instructions
+This file serves as a daily work log to track progress on various work items.
+
+** How to Use
+- Press =C-c l= to insert a new daily log entry for today
+- Each day has a top-level heading with the date
+- Add work items as second-level headings under each day
+- Use bullet points to capture notes and progress
+- Track TODOs for each work item
+
+** Keybinding
+The custom keybinding =C-c l= will insert a template for the current day.
+
+Add this to your Emacs configuration:
+#+BEGIN_SRC emacs-lisp
+(defun insert-daily-log-entry ()
+  "Insert a daily log entry template for today."
+  (interactive)
+  (goto-char (point-min))
+  (re-search-forward "^\\* Log Entries" nil t)
+  (end-of-line)
+  (newline)
+  (insert "** " (format-time-string "%Y-%m-%d %A") "\n")
+  (insert "*** Work Item Name\n")
+  (insert "**** TODO [/]\n")
+  (insert "- [ ] \n")
+  (insert "***** Notes\n")
+  (insert "- \n"))
+
+(define-key org-mode-map (kbd "C-c l") 'insert-daily-log-entry)
+#+END_SRC
+
+* Log Entries
+
+** 2024-01-15 Monday
+*** Example Work Item
+**** TODO [1/3] Complete the feature implementation
+- [X] Started working on the authentication module
+- [ ] Fixed bug in login flow
+- [ ] Need to add unit tests
+***** Notes
+- Started working on the authentication module
+- Fixed bug in login flow
+- Need to add unit tests
