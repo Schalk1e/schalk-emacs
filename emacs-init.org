@@ -261,7 +261,7 @@ The base emacs approach is a little involved so I like to use *multiple-cursors*
   :bind (("M-m" . mc/edit-lines)))
 #+END_SRC
 
-** Keybinds For Daily  Logs
+** Daily Logs
 
 Add a keybind that prepopulates a daily log entry in a log org file. A template for such a log file can be found [[LOG-TEMPLATE.org][here]].
 
@@ -281,6 +281,25 @@ Add a keybind that prepopulates a daily log entry in a log org file. A template 
   (insert "-"))
 
 (global-set-key (kbd "C-c l") 'insert-daily-log-entry)
+#+END_SRC
+
+Add a keyind that pushes log entry changes.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun commit-and-push-logs ()
+  "Add, commit, and push work log changes."
+  (interactive)
+  (let ((default-directory (file-name-directory (buffer-file-name))))
+    (if (file-exists-p (expand-file-name ".work-logs" default-directory))
+        (progn
+          (shell-command "git add .")
+          (shell-command (format "git commit -m \"Update work logs %s\""
+                                (format-time-string "%Y-%m-%d")))
+          (shell-command "git push")
+          (message "Logs committed and pushed!"))
+      (error "Not in a logs directory! .work-logs marker file not found."))))
+
+(global-set-key (kbd "C-c p") 'commit-and-push-logs)
 #+END_SRC
 
 * Languages and other things

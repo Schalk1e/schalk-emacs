@@ -95,6 +95,21 @@
 
 (global-set-key (kbd "C-c l") 'insert-daily-log-entry)
 
+(defun commit-and-push-logs ()
+  "Add, commit, and push work log changes."
+  (interactive)
+  (let ((default-directory (file-name-directory (buffer-file-name))))
+    (if (file-exists-p (expand-file-name ".work-logs" default-directory))
+        (progn
+          (shell-command "git add .")
+          (shell-command (format "git commit -m \"Update work logs %s\""
+                                (format-time-string "%Y-%m-%d")))
+          (shell-command "git push")
+          (message "Logs committed and pushed!"))
+      (error "Not in a logs directory! .work-logs marker file not found."))))
+
+(global-set-key (kbd "C-c p") 'commit-and-push-logs)
+
 ;; Magit setup for Emacs
 (use-package magit
   :ensure t
