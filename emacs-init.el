@@ -119,10 +119,9 @@
         (newline)
         (insert "** " today "\n")))
     ;; Insert work item template (always happens)
-    (insert "*** Work Item Name\n")
-    (insert "**** TODO [/]\n")
-    (insert "- [ ]\n")
-    (insert "***** Notes\n")
+    (insert "*** Work Item Name [/]\n")
+    (insert "**** TODO\n")
+    (insert "**** Notes\n")
     (insert "-")))
 
 (global-set-key (kbd "C-c l") 'insert-daily-log-entry)
