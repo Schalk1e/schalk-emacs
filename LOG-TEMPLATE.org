@@ -12,26 +12,8 @@ This file serves as a daily work log to track progress on various work items.
 - Track TODOs for each work item
 
 ** Keybinding
-The custom keybinding =C-c l= will insert a template for the current day.
 
-Add this to your Emacs configuration:
-#+BEGIN_SRC emacs-lisp
-(defun insert-daily-log-entry ()
-  "Insert a daily log entry template for today."
-  (interactive)
-  (goto-char (point-min))
-  (re-search-forward "^\\* Log Entries" nil t)
-  (end-of-line)
-  (newline)
-  (insert "** " (format-time-string "%Y-%m-%d %A") "\n")
-  (insert "*** Work Item Name\n")
-  (insert "**** TODO [/]\n")
-  (insert "- [ ] \n")
-  (insert "***** Notes\n")
-  (insert "- \n"))
-
-(define-key org-mode-map (kbd "C-c l") 'insert-daily-log-entry)
-#+END_SRC
+For keybinds see =Daily Log= in =emacs-init.org=.
 
 * Log Entries
 
