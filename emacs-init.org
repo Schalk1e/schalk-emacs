@@ -112,8 +112,6 @@ whenever we save this org-mode file.
 #+END_SRC
 
 * Global configs
-
-
 ** Unicode things
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -312,6 +310,13 @@ Add a keyind that pushes log entry changes.
       (error "Not in a logs directory! .work-logs marker file not found."))))
 
 (global-set-key (kbd "C-c p") 'commit-and-push-logs)
+#+END_SRC
+
+Add a WIP active state to org-mode configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq org-todo-keywords
+      '((sequence "TODO" "WIP" "|" "DONE")))
 #+END_SRC
 
 * Languages and other things

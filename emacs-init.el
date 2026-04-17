@@ -141,6 +141,9 @@
 
 (global-set-key (kbd "C-c p") 'commit-and-push-logs)
 
+(setq org-todo-keywords
+      '((sequence "TODO" "WIP" "|" "DONE")))
+
 ;; Magit setup for Emacs
 (use-package magit
   :ensure t
