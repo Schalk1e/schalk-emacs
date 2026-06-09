@@ -255,7 +255,7 @@ I like a simple keybind that allows me to have multiple cursors across a selecte
 The base emacs approach is a little involved so I like to use *multiple-cursors* for this.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(use-package  multiple-cursors
+(use-package multiple-cursors
   :ensure t
   :bind (("M-m" . mc/edit-lines)))
 #+END_SRC
@@ -369,13 +369,13 @@ up my git workflow a little.
 
 ** Org
 
-Not much here. I only started using =org-mode= for this, so it'll probably grow
-over time.
+Not much going on here. Turning off automatic indentation globally.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package org
-    :config
-    (setq org-src-fontify-natively t))
+(use-package org
+  :config
+  (setq org-src-fontify-natively t)
+  (setq org-adapt-indentation nil))
 #+END_SRC
 
 ** Clojure
@@ -567,4 +567,28 @@ manually terminated.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package yaml-mode
     :ensure t)
+#+END_SRC
+
+*** Jira [TRIAL]
+
+/Don't think I'll be using this going forward. Too many quirks around formatting etc. Better to build something custom I think./
+
+Let's try =org-jira= and see how it works for our purposes. This requires setting up authentication via authinfo.
+
+**** TODO Migrate this to using ~authinfo.gpg~
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package org-jira
+  :ensure t
+  :config
+  (setq jiralib-url (getenv "JIRA_BASE_URL")
+        auth-sources '("~/.authinfo")
+        org-jira-download-comments t)
+  (let* ((auth-info (auth-source-search :host (getenv "JIRA_BASE_URL") :require '(:user :secret)))
+         (user (plist-get (car auth-info) :user))
+         (token (funcall (plist-get (car auth-info) :secret))))
+    (setq jiralib-token
+          `("Authorization" . ,(concat "Basic "
+                                       (base64-encode-string
+                                        (concat user ":" token) t))))))
 #+END_SRC

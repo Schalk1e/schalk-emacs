@@ -95,7 +95,7 @@
     ; (aidermacs-default-model "gpt-5.2")
 )
 
-(use-package  multiple-cursors
+(use-package multiple-cursors
   :ensure t
   :bind (("M-m" . mc/edit-lines)))
 
@@ -173,7 +173,8 @@
 
 (use-package org
   :config
-  (setq org-src-fontify-natively t))
+  (setq org-src-fontify-natively t)
+  (setq org-adapt-indentation nil))
 
 (use-package clojure-mode
   :ensure t
